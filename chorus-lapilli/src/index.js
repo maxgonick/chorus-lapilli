@@ -56,7 +56,8 @@ class Game extends React.Component {
       ],
       stepNumber: 0,
       xIsNext: true,
-      allPlaced: false,
+      chorusRules: false,
+      beenClicked: [false, null],
     };
   }
 
@@ -64,12 +65,33 @@ class Game extends React.Component {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
+    if (calculateWinner(squares)) {
       return;
     }
-    squares[i] = this.state.xIsNext ? "X" : "O";
-    const allThree =
-      hasThreeSymbols(squares, "X") && hasThreeSymbols(squares, "O");
+    //Check if chorusRules have already been implemented to avoid redundancy
+    if (this.state.chorusRules === false) {
+      squares[i] = this.state.xIsNext ? "X" : "O";
+      this.setState({
+        chorusRules: hasThreeSymbols(squares),
+      });
+    }
+    //Playing in chorusRules
+    else {
+      if (this.state.beenClicked[0] === false) {
+        //tells us it has been clicked)
+        this.state.beenClicked[0] = true;
+        //what index was the target div
+        this.state.beenClicked[1] = i;
+      } else {
+        if (isValid(squares, this.state.beenClicked[1], i)) {
+          squares[i] = this.state.xIsNext ? "X" : "O";
+        } else {
+          this.state.beenClicked[0] = false;
+          this.state.beenClicked[1] = null;
+          return;
+        }
+      }
+    }
     this.setState({
       history: history.concat([
         {
@@ -78,7 +100,6 @@ class Game extends React.Component {
       ]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
-      allPlaced: allThree,
     });
   }
 
@@ -152,15 +173,42 @@ function calculateWinner(squares) {
   }
   return null;
 }
-//Helper Function to determine if array has 3 of 'symbol' placed
-function hasThreeSymbols(inputArray, symbol) {
-  let counter = 0;
+//Helper Function to determine if array has 3 Xs and Os
+function hasThreeSymbols(inputArray) {
+  let xCounter = 0;
+  let oCounter = 0;
   inputArray.forEach((element) => {
-    if (element === symbol) {
-      counter += 1;
+    if (element === "X") {
+      xCounter += 1;
+    } else if (element === "O") {
+      oCounter += 1;
     }
   });
-  if (counter === 3) {
+  if (xCounter === 3 && oCounter === 3) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function isValid(inputArray, start, end) {
+  if (inputArray[end] == null) {
+    return false;
+  }
+  //Array of valid moves in syntax moves[0] gives all valid spots for 0
+  const moves = [
+    [1, 3, 4],
+    [0, 2, 3, 4, 5],
+    [1, 4, 5],
+    [0, 1, 4, 6, 7],
+    [0, 1, 2, 3, 5, 6, 7, 8],
+    [1, 2, 4, 7, 8],
+    [3, 4, 7],
+    [3, 4, 5, 6, 8],
+    [4, 5, 7],
+  ];
+
+  if (moves[start].includes(end)) {
     return true;
   } else {
     return false;
