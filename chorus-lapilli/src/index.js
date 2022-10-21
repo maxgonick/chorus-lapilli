@@ -70,6 +70,9 @@ class Game extends React.Component {
     }
     //Check if chorusRules have already been implemented to avoid redundancy
     if (this.state.chorusRules === false) {
+      if (squares[i]) {
+        return;
+      }
       squares[i] = this.state.xIsNext ? "X" : "O";
       this.setState({
         chorusRules: hasThreeSymbols(squares),
@@ -77,17 +80,47 @@ class Game extends React.Component {
     }
     //Playing in chorusRules
     else {
+      //Checking if middle spot is occupied
+      if (squares[4] != null) {
+        if (
+          (squares[4] == "X" && this.state.xIsNext) ||
+          (squares[4] == "O" && !this.state.xIsNext)
+        ) {
+          console.log("Please move center next turn or lose");
+        }
+      }
+      //Haven't selected symbol yet
       if (this.state.beenClicked[0] === false) {
+        //Checks that symbol selected is valid
+        if (
+          (!this.state.xIsNext && squares[i] === "X") ||
+          (this.state.xIsNext && squares[i] == "O") ||
+          squares[i] == null
+        ) {
+          return;
+        }
         //tells us it has been clicked)
         this.state.beenClicked[0] = true;
         //what index was the target div
         this.state.beenClicked[1] = i;
+        return;
       } else {
+        //If symbol has been selected, check if move is valid
         if (isValid(squares, this.state.beenClicked[1], i)) {
+          if (
+            (squares[4] == "X" && this.state.xIsNext) ||
+            (squares[4] == "O" && !this.state.xIsNext)
+          ) {
+          }
           squares[i] = this.state.xIsNext ? "X" : "O";
+          squares[this.state.beenClicked[1]] = null;
+          this.setState({
+            beenClicked: [false, null],
+          });
         } else {
-          this.state.beenClicked[0] = false;
-          this.state.beenClicked[1] = null;
+          this.setState({
+            beenClicked: [false, null],
+          });
           return;
         }
       }
@@ -192,9 +225,10 @@ function hasThreeSymbols(inputArray) {
 }
 
 function isValid(inputArray, start, end) {
-  if (inputArray[end] == null) {
+  if (inputArray[end] == "X" || inputArray[end] == "O") {
     return false;
   }
+
   //Array of valid moves in syntax moves[0] gives all valid spots for 0
   const moves = [
     [1, 3, 4],
@@ -207,7 +241,7 @@ function isValid(inputArray, start, end) {
     [3, 4, 5, 6, 8],
     [4, 5, 7],
   ];
-
+  console.log(moves[start]);
   if (moves[start].includes(end)) {
     return true;
   } else {
