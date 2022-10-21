@@ -56,6 +56,7 @@ class Game extends React.Component {
       ],
       stepNumber: 0,
       xIsNext: true,
+      allPlaced: false,
     };
   }
 
@@ -67,6 +68,8 @@ class Game extends React.Component {
       return;
     }
     squares[i] = this.state.xIsNext ? "X" : "O";
+    const allThree =
+      hasThreeSymbols(squares, "X") && hasThreeSymbols(squares, "O");
     this.setState({
       history: history.concat([
         {
@@ -75,6 +78,7 @@ class Game extends React.Component {
       ]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
+      allPlaced: allThree,
     });
   }
 
@@ -147,6 +151,20 @@ function calculateWinner(squares) {
     }
   }
   return null;
+}
+//Helper Function to determine if array has 3 of 'symbol' placed
+function hasThreeSymbols(inputArray, symbol) {
+  let counter = 0;
+  inputArray.forEach((element) => {
+    if (element === symbol) {
+      counter += 1;
+    }
+  });
+  if (counter === 3) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 // ========================================

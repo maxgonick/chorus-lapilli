@@ -1,2 +1,4 @@
 (Starting from end of tic-tac-toe project)
-
+    1.) Added new attribute to state object that tracks if the current Board contains 3 Xs and Os placed called allPlaced and initialized it to false (as when the game starts, there are no symbols on the board)
+    2.) Created helper function "hasThreeSymbols(inputArray, symbol)" that checks if a given array has exactly 3 occurances of the given symbol, and if so return true. I used this function to update our previous allPlaced attribute in handleClick, as we want to check if the board has 3 Xs and Os placed after each click. I called hasThreeSymbols on the `current` board array and check if it returned true when passing in X and O, and if so update allPlaced to true.
+    3.) 
