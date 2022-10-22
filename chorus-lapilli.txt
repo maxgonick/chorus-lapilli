@@ -5,4 +5,18 @@
     4.) Added state attribute "beenClicked" which stores a boolean and an integer. It's updated so if a user clicks a square (that is filled), it updates the attribute to store that the div has been clicked, as well as which div. This is done so they can click another spot to move their symbol
     5.) Changed handleClick method, so it checks if we are playing in chorusRules, and if so, checks if a symbol has been "selected" already, using our beenClicked state attribute. If a symbol has been selected, it checks if the spot we want to move it to is a valid move using a helper function, and if so moves the symbol to the new spot and wipes out the previous spot.
     6.) Added check in handleClick method that the symbol selected "belongs" to the player (X player clicked on X symbol and vice verse) and that the square selected even contains a symbol.
-    7.) 
+    7.) While in "chorusRules" check if squares[4] (middle square) was occupied by the current player (using xIsNext), if it was occupied, only allow a move from the center symbol to move out of the center
+    8.) Finally, to check if the next move will win, I made a shallow copy of the current board, and made the intended move on that shallow board. I then used the checkWinner helper function we defined earlier to see if the board is now won, if that move leads to a winning move we allow it, and if it does not alert the user that they must move their center piece
+
+
+How To Interact:
+   1.) You can play Chorus Lapilli by clicking on one of the 9 squares displayed in the browser.
+   2.) At the beginning, player 'X' starts and can click an open square to place their symbol. Then the app will prompt "Next Player: O" meaning that is player 'O' turn to place down a symbol. Whatever is after "Next Player: " is the player who's turn is active
+   3.) This will follow normal tic-tac-toe rules, until either 3 Xs and 3 Os are placed down, or if one of the players wins before that (in three moves).
+   4.) If neither player has won, and there are 3 Xs and 3 Os down on the board, the app follows new rules
+   5.) Following the status at the top of the app "Next Player" displays which player's turn it is.
+   6.) On a player's turn, they can move one of their symbols to an adjacent (up, down, left, right, and diagonal) empty (meaning not holding an X or O) square by clicking on the piece they want to move, and then clicking the empty square they want to move to (After clicking a square, give it about 1 second for the board to register the click). If you want to change your selection (after selecting a symbol and not trying to move it), click on another symbol two times to select it, then click on a valid space to move to.
+   7.) If this is a valid move, the symbol will move and the app will prompt for the next players turn
+   8.) However, if it is an invalid move, the symbol won't move. In this case, the player should click the symbol they wish to move, and click a valid spot to move it to. 
+   9.) The one exception to this rule, is if a player is occupying the middle square. If a player has their symbol in the middle square, they must either move that symbol, or win the game in the next turn. If their move does not satisfy one of these conditions they will be alerted.
+   10.) The game will end if a player has 3 symbols in a row, and the board will display "Winner: " followed by which player won (X or O), the game board will become inactive after this, and you should reload the page to play a new game.

@@ -80,37 +80,38 @@ class Game extends React.Component {
     }
     //Playing in chorusRules
     else {
-      //Checking if middle spot is occupied
-      if (squares[4] != null) {
-        if (
-          (squares[4] == "X" && this.state.xIsNext) ||
-          (squares[4] == "O" && !this.state.xIsNext)
-        ) {
-          console.log("Please move center next turn or lose");
-        }
-      }
       //Haven't selected symbol yet
       if (this.state.beenClicked[0] === false) {
         //Checks that symbol selected is valid
         if (
           (!this.state.xIsNext && squares[i] === "X") ||
-          (this.state.xIsNext && squares[i] == "O") ||
-          squares[i] == null
+          (this.state.xIsNext && squares[i] === "O") ||
+          squares[i] === null
         ) {
           return;
         }
-        //tells us it has been clicked)
-        this.state.beenClicked[0] = true;
-        //what index was the target div
-        this.state.beenClicked[1] = i;
+        //tells us it has been clicked and where
+        this.setState({ beenClicked: [true, i] });
         return;
       } else {
         //If symbol has been selected, check if move is valid
         if (isValid(squares, this.state.beenClicked[1], i)) {
+          //Checking if middle space is occupied
+          let tempBoard = [...squares];
+          tempBoard[i] = this.state.xIsNext ? "X" : "O";
           if (
-            (squares[4] == "X" && this.state.xIsNext) ||
-            (squares[4] == "O" && !this.state.xIsNext)
+            ((squares[4] === "X" &&
+              this.state.xIsNext &&
+              this.state.beenClicked[1] !== 4) ||
+              (squares[4] === "O" &&
+                !this.state.xIsNext &&
+                this.state.beenClicked[1] !== 4)) &&
+            !calculateWinner(tempBoard)
           ) {
+            alert(
+              "You must move out of the center square or make a winning move"
+            );
+            return;
           }
           squares[i] = this.state.xIsNext ? "X" : "O";
           squares[this.state.beenClicked[1]] = null;
@@ -148,20 +149,20 @@ class Game extends React.Component {
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
-    const moves = history.map((step, move) => {
-      const desc = move ? "Go to move #" + move : "Go to game start";
-      return (
-        <li key={move}>
-          <button
-            onClick={() => {
-              this.jumpTo(move);
-            }}
-          >
-            {desc}
-          </button>
-        </li>
-      );
-    });
+    // const moves = history.map((step, move) => {
+    //   const desc = move ? "Go to move #" + move : "Go to game start";
+    //   return (
+    //     <li key={move}>
+    //       <button
+    //         onClick={() => {
+    //           this.jumpTo(move);
+    //         }}
+    //       >
+    //         {desc}
+    //       </button>
+    //     </li>
+    //   );
+    // });
 
     let status;
     if (winner) {
@@ -179,7 +180,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{moves}</ol>
+          {/* <ol>{moves}</ol> */}
         </div>
       </div>
     );
@@ -225,7 +226,7 @@ function hasThreeSymbols(inputArray) {
 }
 
 function isValid(inputArray, start, end) {
-  if (inputArray[end] == "X" || inputArray[end] == "O") {
+  if (inputArray[end] === "X" || inputArray[end] === "O") {
     return false;
   }
 
